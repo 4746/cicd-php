@@ -63,9 +63,15 @@ RUN docker-php-ext-configure gd \
     && docker-php-ext-configure ldap
 
 # Install composer
-RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer \
-    && curl -sL https://deb.nodesource.com/setup_16.x | bash - \
-    && apt-get install -y nodejs
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+
+RUN apt-get install -y ca-certificates gnupg && mkdir -p /etc/apt/keyrings &&  \
+    curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg &&  \
+    echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_16.x nodistro main" | tee /etc/apt/sources.list.d/nodesource.list &&  \
+    echo "Package: nodejs" >> /etc/apt/preferences.d/preferences &&  \
+    echo "Pin: origin deb.nodesource.com" >> /etc/apt/preferences.d/preferences &&  \
+    echo "Pin-Priority: 1001" >> /etc/apt/preferences.d/preferences &&  \
+    apt-get update && apt-get install -y nodejs
 
 RUN composer global require deployer/deployer \
     && composer global require friendsofphp/php-cs-fixer \
