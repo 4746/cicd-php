@@ -1,4 +1,4 @@
-# cicd-php - 8.1-fpm-node16
+# cicd-php
 
 # use
 ```shell
