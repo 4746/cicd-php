@@ -7,6 +7,8 @@ ENV DEBIAN_FRONTEND=noninteractive
 ENV PATH ./vendor/bin:/composer/vendor/bin:$PATH
 ENV EDITOR=/usr/bin/nano
 
+ARG NODE_VERSION=14.21.3
+
 # Install dev dependencies
 RUN apt-get update -y && apt-get upgrade -y
 
@@ -63,9 +65,9 @@ RUN docker-php-ext-configure gd \
     && docker-php-ext-configure ldap
 
 # Install composer
-RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer \
-    && curl -sL https://deb.nodesource.com/setup_14.x | bash - \
-    && apt-get install -y nodejs
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+
+RUN curl https://nodejs.org/dist/v$NODE_VERSION/node-v$NODE_VERSION-linux-x64.tar.gz | tar -xz -C /usr/local --strip-components 1
 
 RUN composer global require deployer/deployer \
     && composer global require friendsofphp/php-cs-fixer \
