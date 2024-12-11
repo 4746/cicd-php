@@ -1,10 +1,10 @@
-FROM php:8.1-fpm
+FROM php:8.3-fpm
 
 ENV COMPOSER_ALLOW_SUPERUSER=1
 ENV COMPOSER_HOME=/composer
 ENV COMPOSER_MEMORY_LIMIT=-1
 ENV DEBIAN_FRONTEND=noninteractive
-ENV PATH ./vendor/bin:/composer/vendor/bin:$PATH
+ENV PATH=./vendor/bin:/composer/vendor/bin:$PATH
 ENV EDITOR=/usr/bin/nano
 
 # Install dev dependencies
@@ -37,9 +37,15 @@ RUN apt-get install -y --no-install-recommends \
 
 
 # Install PECL and PEAR extensions
-RUN pecl install imagick \
-    && pecl install -o -f redis \
-    && docker-php-ext-enable imagick \
+RUN git clone https://github.com/Imagick/imagick.git /usr/src/php/ext/imagick \
+    && cd /usr/src/php/ext/imagick \
+    && phpize \
+    && ./configure \
+    && make \
+    && make install \
+    && docker-php-ext-enable imagick
+
+RUN pecl install -o -f redis \
     && docker-php-ext-enable redis \
     && rm -rf /tmp/pear
 
